@@ -621,7 +621,7 @@
   .pq {
     max-width: var(--measure-wide);
     margin: 56px auto;
-    padding: 48px 32px;
+    padding: 64px 32px 56px;
     text-align: center;
     border-top: 0.5px solid var(--rule);
     border-bottom: 0.5px solid var(--rule);
@@ -646,9 +646,10 @@
     font-style: italic;
     font-weight: 400;
     font-size: clamp(22px, 3vw, 30px);
-    line-height: 1.35;
+    line-height: 1.5;
     color: var(--ink);
     margin-bottom: 20px;
+    padding-top: 0.15em;
     text-wrap: balance;
   }
   .pq-attr {
@@ -1045,6 +1046,92 @@
     letter-spacing: 0.01em;
   }
 
+  /* ============ NOTES & SOURCES ============ */
+  .sources {
+    position: relative;
+    z-index: 2;
+    background: var(--paper-deep);
+    padding: 80px 28px 80px;
+    border-bottom: 0.5px solid var(--rule);
+  }
+  .sources-inner {
+    max-width: var(--measure-wide);
+    margin: 0 auto;
+  }
+  .sources-h {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 800;
+    font-size: clamp(32px, 4vw, 44px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1.4px solid var(--rule);
+    text-wrap: balance;
+  }
+  .sources-h em { font-style: italic; font-weight: 500; color: var(--accent); }
+  .sources-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 36px;
+    max-width: var(--measure-wide);
+  }
+  .sources-list li {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 24px;
+    padding: 18px 0;
+    border-bottom: 0.5px solid var(--rule-soft);
+    align-items: baseline;
+  }
+  .sources-list li:last-child { border-bottom: 0; }
+  .src-stat {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .src-text {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    text-wrap: pretty;
+  }
+  .src-text cite {
+    display: block;
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .sources-note {
+    font-family: 'Newsreader', Georgia, serif;
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-mute);
+    max-width: var(--measure);
+    padding-top: 24px;
+    border-top: 0.5px solid var(--rule-soft);
+    text-wrap: pretty;
+  }
+  .sources-note a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 0.5px solid var(--accent-soft);
+  }
+  @media (max-width: 600px) {
+    .sources-list li { grid-template-columns: 70px 1fr; gap: 14px; }
+    .src-stat { font-size: 20px; }
+  }
+
   /* ============ FOOTER ============ */
   .site-footer {
     position: relative;
@@ -1419,11 +1506,11 @@
     <h2 class="toc-h">Where to <em>begin.</em></h2>
     <ul class="toc-list">
       <li class="toc-row"><a href="#whatweare"><span class="toc-num">01.</span><span class="toc-label">What We Are <em>Built by and for the next generation of Indian Americans.</em></span></a></li>
-      <li class="toc-row"><a href="#whynow"><span class="toc-num">02.</span><span class="toc-label">Why Now <em>Both parties are doing a poor job — and the gap is widening.</em></span></a></li>
-      <li class="toc-row"><a href="#thegap"><span class="toc-num">03.</span><span class="toc-label">The Gap <em>Why traditional politics cannot reach this community.</em></span></a></li>
-      <li class="toc-row"><a href="#whatwedo"><span class="toc-num">04.</span><span class="toc-label">What We Do <em>Turning Indian American spaces into civic infrastructure.</em></span></a></li>
-      <li class="toc-row"><a href="#wherewestart"><span class="toc-num">05.</span><span class="toc-label">Where We Start <em>Midwest-rooted by design — Michigan, Illinois, Ohio.</em></span></a></li>
-      <li class="toc-row"><a href="#ourline"><span class="toc-num">06.</span><span class="toc-label">Our Line <em>Bipartisan because we are not a monolith.</em></span></a></li>
+      <li class="toc-row"><a href="#ourline"><span class="toc-num">02.</span><span class="toc-label">Our Line <em>Bipartisan because we are not a monolith.</em></span></a></li>
+      <li class="toc-row"><a href="#whynow"><span class="toc-num">03.</span><span class="toc-label">Why Now <em>Both parties are doing a poor job — and the gap is widening.</em></span></a></li>
+      <li class="toc-row"><a href="#thegap"><span class="toc-num">04.</span><span class="toc-label">The Gap <em>Why traditional politics cannot reach this community.</em></span></a></li>
+      <li class="toc-row"><a href="#whatwedo"><span class="toc-num">05.</span><span class="toc-label">What We Do <em>Turning Indian American spaces into civic infrastructure.</em></span></a></li>
+      <li class="toc-row"><a href="#wherewestart"><span class="toc-num">06.</span><span class="toc-label">Where We Start <em>Midwest-rooted by design — Michigan, Illinois, Ohio.</em></span></a></li>
       <li class="toc-row"><a href="#thename"><span class="toc-num">07.</span><span class="toc-label">The Name <em>What an astra is, and why it fits this moment.</em></span></a></li>
       <li class="toc-row"><a href="#thecall"><span class="toc-num">ii.</span><span class="toc-label">The Call <em>The machinery we are building — and how to help.</em></span></a></li>
     </ul>
@@ -1460,11 +1547,25 @@
   </div>
 </section>
 
-<!-- ============ 02. WHY NOW ============ -->
-<section class="chapter" id="whynow">
+<!-- ============ 02. OUR LINE ============ -->
+<section class="chapter" id="ourline">
   <div class="chapter-inner">
     <header class="chapter-head">
       <div class="chapter-num">02.</div>
+      <div class="chapter-eyebrow">Our Line</div>
+      <h2 class="chapter-title">We are bipartisan because Indian Americans are <em>not a monolith.</em></h2>
+      <p class="chapter-deck">We are pro–Indian American. Period.</p>
+    </header>
+    <div class="prose">
+      <p class="lede">We will work with Democrats, Republicans, independents, mayors, governors, school board members, legislators, and candidates who take our community seriously.</p>
+    </div>
+  </div>
+</section>
+<!-- ============ 03. WHY NOW ============ -->
+<section class="chapter" id="whynow">
+  <div class="chapter-inner">
+    <header class="chapter-head">
+      <div class="chapter-num">03.</div>
       <div class="chapter-eyebrow">Why Now</div>
       <h2 class="chapter-title">Both parties are doing a <em>poor job</em> courting Indian Americans.</h2>
       <p class="chapter-deck">Especially young Indian Americans. The community is bigger and broader than the rooms politicians keep walking into.</p>
@@ -1472,7 +1573,7 @@
     <div class="prose">
       <p class="lede">Too often, campaigns see a wealthy donor class, a few famous CEOs, or a handful of loud voices — and mistake that for the whole community.</p>
 
-      <p>But the real Indian American story is bigger: the med student trying to understand health policy. The engineer who has never been invited into local politics. The motel family in Ohio. The parent on an H-4 visa learning English and starting a business. The grandparent at temple who wants to be heard but does not know where to begin.</p>
+      <p>But the real Indian American story is bigger: the med student trying to understand health policy. The engineer who has never been invited into local politics. The motel family in Ohio. The parent on an H-4 visa learning English and starting a business. The grandparent at the temple, or the mandir, who wants to be heard but does not know where to begin.</p>
 
       <h3>An underbuilt majority</h3>
 
@@ -1486,11 +1587,11 @@
   </div>
 </section>
 
-<!-- ============ 03. THE GAP ============ -->
+<!-- ============ 04. THE GAP ============ -->
 <section class="chapter" id="thegap">
   <div class="chapter-inner">
     <header class="chapter-head">
-      <div class="chapter-num">03.</div>
+      <div class="chapter-num">04.</div>
       <div class="chapter-eyebrow">The Gap</div>
       <h2 class="chapter-title">Traditional politics cannot reach this community from a <em>ballroom</em> in D.C.</h2>
       <p class="chapter-deck">Our organizers can. That is why we begin where we do — and with whom.</p>
@@ -1503,18 +1604,18 @@
       <p>Astra starts with young Indian Americans because they are not just a demographic. They are the bridge. They can reach their peers, their parents, their grandparents, their campuses, their religious spaces, and the civic rooms where our community has been absent for too long.</p>
 
       <div class="pq">
-        <p class="pq-text">A campaign staffer may not know how to talk to a first-generation student at a garba practice. Our organizers can.</p>
+        <p class="pq-text">A candidate may not understand why green cards, residency slots, tariffs, permits, school boards, and city councils all belong in the same conversation.</p>
         <p class="pq-attr">Astra · The Bridge</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ 04. WHAT WE DO ============ -->
+<!-- ============ 05. WHAT WE DO ============ -->
 <section class="chapter" id="whatwedo">
   <div class="chapter-inner">
     <header class="chapter-head">
-      <div class="chapter-num">04.</div>
+      <div class="chapter-num">05.</div>
       <div class="chapter-eyebrow">What We Do</div>
       <h2 class="chapter-title">We turn Indian American spaces into <em>civic infrastructure.</em></h2>
       <p class="chapter-deck">Food drives, voter drives, organizer trainings, candidate briefings, issue conversations: all of it is political infrastructure.</p>
@@ -1539,11 +1640,11 @@
   </div>
 </section>
 
-<!-- ============ 05. WHERE WE START ============ -->
+<!-- ============ 06. WHERE WE START ============ -->
 <section class="chapter" id="wherewestart">
   <div class="chapter-inner">
     <header class="chapter-head">
-      <div class="chapter-num">05.</div>
+      <div class="chapter-num">06.</div>
       <div class="chapter-eyebrow">Where We Start</div>
       <h2 class="chapter-title">Astra is <em>Midwest-rooted</em> by design.</h2>
       <p class="chapter-deck">We are starting in the places that national politics often treats as flyover territory — but where Indian American communities are growing, working, studying, worshipping, building businesses, and raising families.</p>
@@ -1924,27 +2025,6 @@
   </div>
 </section>
 
-<!-- ============ 06. OUR LINE ============ -->
-<section class="chapter" id="ourline">
-  <div class="chapter-inner">
-    <header class="chapter-head">
-      <div class="chapter-num">06.</div>
-      <div class="chapter-eyebrow">Our Line</div>
-      <h2 class="chapter-title">We are bipartisan because Indian Americans are <em>not a monolith.</em></h2>
-      <p class="chapter-deck">We are pro–Indian American. Period.</p>
-    </header>
-    <div class="prose">
-      <p class="lede">We will work with Democrats, Republicans, independents, mayors, governors, school board members, legislators, and candidates who take our community seriously.</p>
-
-      <div class="pq">
-        <p class="pq-text">We are not asking for symbolism. We are building leverage.</p>
-        <p class="pq-attr">Astra · The Standard</p>
-      </div>
-
-      <p>Leverage means the community shows up — organized, informed, and unwilling to be taken for granted by either party. It means candidates have to earn Indian American support, not assume it. And it means when our organizers walk into a room, the room knows what we are bringing with us.</p>
-    </div>
-  </div>
-</section>
 
 <!-- ============ 07. THE NAME (DARK CHAPTER) ============ -->
 <section class="chapter dark" id="thename">
@@ -2040,13 +2120,60 @@
     <h2 class="closing-q">Astra is what we summon when <em>waiting is no longer enough.</em></h2>
     <p class="closing-deck">Build the machinery with us. Organize as Indian Americans. Show up where it matters. The next chapter of this community begins with the people who decide it is theirs to write.</p>
     <div class="cta-row">
-      <a href="mailto:hello@astracivic.org" class="cta cta-primary">Join Astra</a>
-      <a href="mailto:hello@astracivic.org" class="cta cta-secondary">Fund the Work</a>
+      <a href="mailto:info@astracivic.org" class="cta cta-primary">Join Astra</a>
+      <a href="mailto:info@astracivic.org" class="cta cta-secondary">Fund the Work</a>
     </div>
     <div class="closing-tagline">
       <span class="wordmark wordmark-large">Astra</span>
       <span class="closing-tagline-sub">Civic Fund · Summoned for this moment.</span>
     </div>
+  </div>
+</section>
+
+<!-- ============ NOTES & SOURCES ============ -->
+<section class="sources" id="sources">
+  <div class="sources-inner">
+    <h3 class="sources-h">Notes &amp; <em>sources.</em></h3>
+    <ol class="sources-list">
+      <li>
+        <span class="src-stat">5.2M</span>
+        <span class="src-text">
+          Population estimate for Indian Americans and people of Indian origin in the United States.
+          <cite>U.S. Census Bureau · American Community Survey</cite>
+        </span>
+      </li>
+      <li>
+        <span class="src-stat">$151K</span>
+        <span class="src-text">
+          Median household income for households headed by an Indian American.
+          <cite>U.S. Census Bureau · American Community Survey · Pew Research Center</cite>
+        </span>
+      </li>
+      <li>
+        <span class="src-stat">50%</span>
+        <span class="src-text">
+          Indian American population growth between 2010 and 2020.
+          <cite>U.S. Census Bureau · 2010 and 2020 Decennial Censuses</cite>
+        </span>
+      </li>
+      <li>
+        <span class="src-stat">34.2</span>
+        <span class="src-text">
+          Median age of Indian Americans in the U.S.
+          <cite>U.S. Census Bureau · American Community Survey</cite>
+        </span>
+      </li>
+      <li>
+        <span class="src-stat">70%</span>
+        <span class="src-text">
+          Indian American voter turnout in the 2024 general election.
+          <cite>AAPI Data · Asian American Voter Survey, 2024</cite>
+        </span>
+      </li>
+    </ol>
+    <p class="sources-note">
+      Photographs courtesy of community organizations and event participants. Quotes attributed to "Astra" represent the project's editorial voice rather than verbatim source material. Figures are rounded to the nearest tenth and reflect the most recent publicly available data at time of publication. For corrections or source requests, write to <a href="mailto:info@astracivic.org">info@astracivic.org</a>.
+    </p>
   </div>
 </section>
 
@@ -2061,7 +2188,7 @@
         <h4>About this organization</h4>
         <p>Astra Civic Fund is a 501(c)(4) social welfare organization building political power for the next generation of Indian Americans — bipartisan, Midwest-rooted, and organized around domestic American policy.</p>
         <p>We work with Democrats, Republicans, and independents who take our community seriously. We are not a foreign lobby. We are not a religious project. We are organizing Indian Americans as Indian Americans.</p>
-        <p style="margin-top: 18px;">For inquiries, write to <a href="mailto:hello@astracivic.org" style="display: inline; color: #c89a5a; text-decoration: none; border-bottom: 0.5px solid #6c6557;">hello@astracivic.org</a>.</p>
+        <p style="margin-top: 18px;">For inquiries, write to <a href="mailto:info@astracivic.org" style="display: inline; color: #c89a5a; text-decoration: none; border-bottom: 0.5px solid #6c6557;">info@astracivic.org</a>.</p>
       </div>
       <div class="footer-col">
         <h4>Read</h4>
@@ -2073,8 +2200,8 @@
       </div>
       <div class="footer-col">
         <h4>Get involved</h4>
-        <a href="mailto:hello@astracivic.org">Join Astra</a>
-        <a href="mailto:hello@astracivic.org">Fund the work</a>
+        <a href="mailto:info@astracivic.org">Join Astra</a>
+        <a href="mailto:info@astracivic.org">Fund the work</a>
         <a href="mailto:organize@astracivic.org">Organize a chapter</a>
         <a href="mailto:press@astracivic.org">Press &amp; media</a>
       </div>
