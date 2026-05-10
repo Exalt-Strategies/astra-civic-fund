@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="vignette" cx="50%" cy="100%" r="80%">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.06"/>
+      <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Cream paper background -->
+  <rect width="1200" height="630" fill="#efe8d6"/>
+  <rect width="1200" height="630" fill="url(#vignette)"/>
+
+  <!-- Constellation accents (decorative) -->
+  <g stroke="rgba(26, 85, 96, 0.22)" stroke-width="0.8" fill="none">
+    <line x1="120" y1="120" x2="220" y2="170"/>
+    <line x1="220" y1="170" x2="290" y2="110"/>
+    <line x1="940" y1="90" x2="1040" y2="155"/>
+    <line x1="1040" y1="155" x2="1110" y2="105"/>
+    <line x1="100" y1="510" x2="195" y2="550"/>
+    <line x1="980" y1="500" x2="1090" y2="545"/>
+  </g>
+  <g fill="rgba(26, 85, 96, 0.55)">
+    <circle cx="120" cy="120" r="2.6"/>
+    <circle cx="220" cy="170" r="2.2"/>
+    <circle cx="290" cy="110" r="2"/>
+    <circle cx="940" cy="90" r="2.4"/>
+    <circle cx="1040" cy="155" r="2.2"/>
+    <circle cx="1110" cy="105" r="2"/>
+    <circle cx="100" cy="510" r="2.3"/>
+    <circle cx="195" cy="550" r="2"/>
+    <circle cx="980" cy="500" r="2.5"/>
+    <circle cx="1090" cy="545" r="2.1"/>
+  </g>
+  <!-- A couple of warm gold "stars" -->
+  <g fill="rgba(200, 154, 90, 0.85)">
+    <circle cx="170" cy="320" r="3"/>
+    <circle cx="1030" cy="330" r="3.2"/>
+  </g>
+
+  <!-- Top eyebrow rule -->
+  <line x1="180" y1="148" x2="260" y2="148" stroke="#1a5560" stroke-width="1.6"/>
+  <text x="600" y="153" text-anchor="middle"
+        font-family="'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace"
+        font-size="14" letter-spacing="6" fill="#6c6557">
+    A DOMESTIC POLITICAL HOME FOR INDIAN AMERICANS
+  </text>
+  <line x1="940" y1="148" x2="1020" y2="148" stroke="#1a5560" stroke-width="1.6"/>
+
+  <!-- ASTRA wordmark -->
+  <text x="600" y="345" text-anchor="middle"
+        font-family="'Bodoni Moda', 'Bodoni 72', 'Didot', 'Playfair Display', Georgia, serif"
+        font-weight="800" font-size="220" letter-spacing="6" fill="#14110d">
+    ASTRA
+  </text>
+
+  <!-- Civic Fund · 501(c)(4) -->
+  <text x="600" y="410" text-anchor="middle"
+        font-family="'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace"
+        font-size="16" letter-spacing="7" fill="#1a5560">
+    CIVIC FUND   ·   501(C)(4)
+  </text>
+
+  <!-- Tagline -->
+  <text x="600" y="488" text-anchor="middle"
+        font-family="'Newsreader', 'Iowan Old Style', Georgia, serif"
+        font-style="italic" font-size="28" fill="#2e2a23">
+    Building political power for the next generation
+  </text>
+  <text x="600" y="525" text-anchor="middle"
+        font-family="'Newsreader', 'Iowan Old Style', Georgia, serif"
+        font-style="italic" font-size="28" fill="#2e2a23">
+    of Indian Americans.
+  </text>
+</svg>
