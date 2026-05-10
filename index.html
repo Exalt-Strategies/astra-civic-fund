@@ -174,6 +174,7 @@
 
   /* ============ HERO ============ */
   .hero {
+    position: relative;
     min-height: 92vh;
     padding: 80px 28px 60px;
     display: flex;
@@ -183,11 +184,24 @@
       radial-gradient(ellipse 60% 80% at 50% 100%, rgba(0,0,0,0.05), transparent 60%),
       var(--paper);
     border-bottom: 2.4px double var(--rule);
+    overflow: hidden;
   }
   .hero-inner {
+    position: relative;
+    z-index: 1;
     max-width: 980px;
     width: 100%;
     text-align: center;
+  }
+  .constellation-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .constellation-bg { display: none; }
   }
   .hero-eyebrow {
     font-family: 'JetBrains Mono', monospace;
@@ -894,12 +908,16 @@
 
   /* ============ CLOSING CTA SECTION ============ */
   .closing {
+    position: relative;
     background: var(--paper-deep);
     padding: 110px 28px 100px;
     border-bottom: 0.5px solid var(--rule);
     text-align: center;
+    overflow: hidden;
   }
   .closing-inner {
+    position: relative;
+    z-index: 1;
     max-width: 820px;
     margin: 0 auto;
   }
@@ -1266,6 +1284,7 @@
 
 <!-- ============ HERO ============ -->
 <header class="hero" id="top">
+  <canvas class="constellation-bg" aria-hidden="true"></canvas>
   <div class="hero-inner">
     <div class="hero-eyebrow">A Domestic Political Home for Indian Americans</div>
     <h1 class="hero-title">Building <em>political power</em> for the next generation of Indian Americans.</h1>
@@ -1952,6 +1971,7 @@
 
 <!-- ============ CLOSING ============ -->
 <section class="closing">
+  <canvas class="constellation-bg" aria-hidden="true"></canvas>
   <div class="closing-inner">
     <div class="closing-eyebrow">Some things must be summoned</div>
     <h2 class="closing-q">Astra is what we summon when <em>waiting is no longer enough.</em></h2>
@@ -2142,6 +2162,148 @@ const countObserver = new IntersectionObserver((entries) => {
   });
 }, { rootMargin: '0px 0px -10% 0px', threshold: 0.4 });
 document.querySelectorAll(NUMERIC_SELECTORS.join(',')).forEach(el => countObserver.observe(el));
+
+/* ---------- Constellation background ---------- */
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const canvases = document.querySelectorAll('.constellation-bg');
+  if (!canvases.length) return;
+
+  const ACCENT = '26, 85, 96';   // --accent (deep teal)
+  const GOLD   = '200, 154, 90'; // aged gold — sparingly for "stars"
+
+  function setup(canvas) {
+    const ctx = canvas.getContext('2d');
+    const host = canvas.parentElement;
+    let w = 0, h = 0, dpr = 1;
+    let dots = [];
+    const mouse = { x: -9999, y: -9999, active: false };
+    let rafId = 0;
+    let visible = false;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = host.getBoundingClientRect();
+      w = rect.width; h = rect.height;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed();
+    }
+
+    function seed() {
+      const count = Math.max(28, Math.min(110, Math.round(w * h / 14000)));
+      dots = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: (Math.random() - 0.5) * 0.18,
+        r: Math.random() * 1.3 + 0.5,
+        phase: Math.random() * Math.PI * 2,
+        gold: Math.random() < 0.08,
+      }));
+    }
+
+    const MAX_DIST = 140;
+    const MAX_DIST_SQ = MAX_DIST * MAX_DIST;
+
+    function tick() {
+      const t = performance.now() * 0.001;
+      ctx.clearRect(0, 0, w, h);
+
+      for (const d of dots) {
+        d.x += d.vx;
+        d.y += d.vy;
+        if (d.x < -10) d.x = w + 10;
+        else if (d.x > w + 10) d.x = -10;
+        if (d.y < -10) d.y = h + 10;
+        else if (d.y > h + 10) d.y = -10;
+      }
+
+      ctx.lineWidth = 0.6;
+      for (let i = 0; i < dots.length; i++) {
+        const a = dots[i];
+        for (let j = i + 1; j < dots.length; j++) {
+          const b = dots[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < MAX_DIST_SQ) {
+            const dist = Math.sqrt(d2);
+            const alpha = (1 - dist / MAX_DIST) * 0.16;
+            ctx.strokeStyle = `rgba(${ACCENT}, ${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+        if (mouse.active) {
+          const dx = a.x - mouse.x, dy = a.y - mouse.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < MAX_DIST_SQ * 1.2) {
+            const dist = Math.sqrt(d2);
+            const alpha = (1 - dist / (MAX_DIST * 1.1)) * 0.28;
+            ctx.strokeStyle = `rgba(${ACCENT}, ${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      for (const d of dots) {
+        const twinkle = 0.55 + Math.sin(t * 1.1 + d.phase) * 0.45;
+        const color = d.gold ? GOLD : ACCENT;
+        const baseAlpha = d.gold ? 0.6 : 0.45;
+        ctx.fillStyle = `rgba(${color}, ${baseAlpha * twinkle})`;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fill();
+        if (d.gold) {
+          const grad = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, d.r * 8);
+          grad.addColorStop(0, `rgba(${GOLD}, ${0.18 * twinkle})`);
+          grad.addColorStop(1, `rgba(${GOLD}, 0)`);
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r * 8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      if (visible) rafId = requestAnimationFrame(tick);
+    }
+
+    function start() { cancelAnimationFrame(rafId); rafId = requestAnimationFrame(tick); }
+    function stop()  { cancelAnimationFrame(rafId); }
+
+    const visObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        visible = e.isIntersecting;
+        if (visible) start(); else stop();
+      });
+    }, { threshold: 0.01 });
+    visObs.observe(host);
+
+    host.addEventListener('mousemove', (e) => {
+      const rect = host.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      mouse.active = true;
+    });
+    host.addEventListener('mouseleave', () => {
+      mouse.active = false;
+      mouse.x = mouse.y = -9999;
+    });
+
+    window.addEventListener('resize', resize);
+    resize();
+  }
+
+  canvases.forEach(setup);
+})();
 
 /* ---------- Map ↔ Photo interaction ---------- */
 function syncMapPhoto(state, on) {
