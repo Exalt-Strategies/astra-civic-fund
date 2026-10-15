@@ -1,9 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="10" fill="#efe8d6"/>
-  <text x="32" y="50" text-anchor="middle"
-        font-family="'Bodoni Moda', 'Bodoni 72', 'Didot', Georgia, serif"
-        font-weight="800" font-size="56" letter-spacing="-1" fill="#1a5560">A</text>
-  <circle cx="13" cy="14" r="1.6" fill="#c89a5a"/>
-  <circle cx="51" cy="14" r="1.4" fill="#1a5560" opacity="0.55"/>
+  <rect width="64" height="64" rx="12" fill="#0B1331"/>
+  <path d="M32 9l5.2 17.8L55 32l-17.8 5.2L32 55l-5.2-17.8L9 32l17.8-5.2Z" fill="#E47A2E"/>
+  <circle cx="32" cy="32" r="3.2" fill="#0B1331"/>
 </svg>
