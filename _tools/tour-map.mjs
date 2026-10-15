@@ -28,7 +28,7 @@ STOPS.forEach(([lo,la],i) => {
   const [x,y] = proj([lo,la]).map(v => +v.toFixed(1));
   dots += `<circle data-stop="${i}" cx="${x}" cy="${y}" r="6"/>`;
 });
-const svg = `<svg class="tour-map" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="tour-t"><title id="tour-t">Map of the 23 campuses visited between September and December 2022</title><g class="st">${states}</g><g class="dots">${dots}</g></svg>`;
+const svg = `<svg class="tour-map" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="tour-t"><title id="tour-t">Map of the 23 campuses our team visited</title><g class="st">${states}</g><g class="dots">${dots}</g></svg>`;
 let html = fs.readFileSync(htmlPath, 'utf8');
 html = html.replace(/<!--TOUR-->[\s\S]*?<!--\/TOUR-->/, `<!--TOUR-->${svg}<!--/TOUR-->`);
 fs.writeFileSync(htmlPath, html);

@@ -1,4 +1,6 @@
 (() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   /* ---------- mobile menu ---------- */
   const btn = document.querySelector('.menu-btn');
   const nav = document.getElementById('site-nav');
@@ -25,7 +27,28 @@
   const io = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
   }), { threshold: .12 });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  document.querySelectorAll('.reveal, .atlas').forEach(el => io.observe(el));
+
+  /* ---------- stat count-up ---------- */
+  if (!reduce) {
+    const so = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      so.unobserve(e.target);
+      const el = e.target, end = +el.dataset.count, dec = +(el.dataset.dec || 0), suf = el.dataset.suffix || '';
+      const t0 = performance.now(), dur = 1400;
+      const tick = t => {
+        const p = Math.min(1, (t - t0) / dur), k = 1 - Math.pow(1 - p, 3);
+        el.textContent = (end * k).toFixed(dec) + suf;
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      el.textContent = (0).toFixed(dec) + suf;
+      requestAnimationFrame(tick);
+    }), { threshold: .6 });
+    document.querySelectorAll('[data-count]').forEach(el => so.observe(el));
+  }
+
+  // arc lengths for the draw-in on the priority-state map
+  document.querySelectorAll('.map .arcs path').forEach(p => p.style.setProperty('--len', Math.ceil(p.getTotalLength())));
 
   /* ---------- where we work: map + tabs ---------- */
   const STATES = {
@@ -61,6 +84,7 @@
   if (card) {
     const img = card.querySelector('img'), cap = card.querySelector('figcaption');
     const nm = card.querySelector('.nm'), desc = card.querySelector('.desc');
+    let current = null, swapT;
     const select = (id, focus) => {
       const s = STATES[id];
       if (!s) return;
@@ -71,8 +95,18 @@
         if (on && focus) t.focus();
       });
       shapes.forEach(p => p.classList.toggle('on', p.dataset.state === id));
-      img.src = s.img; img.alt = s.alt; img.style.objectPosition = s.pos;
-      cap.textContent = s.cap; nm.textContent = s.name; desc.textContent = s.desc;
+      if (id === current) return;
+      const first = current === null;
+      current = id;
+      const apply = () => {
+        img.src = s.img; img.alt = s.alt; img.style.objectPosition = s.pos;
+        cap.textContent = s.cap; nm.textContent = s.name; desc.textContent = s.desc;
+        card.classList.remove('swap');
+      };
+      clearTimeout(swapT);
+      if (reduce || first) return apply();
+      card.classList.add('swap');
+      swapT = setTimeout(apply, 220);
     };
     tabs.forEach((t, i) => {
       t.addEventListener('click', () => select(t.dataset.state));
@@ -90,7 +124,7 @@
     select('mi');
   }
 
-  /* ---------- outreach: fall 2022 campus tour ---------- */
+  /* ---------- outreach: campus tour ---------- */
   // order matches the dots drawn by _tools/tour-map.mjs
   const STOPS = [
     ['Sep 2',  'September 2',  'IUPUI', 'Indianapolis, Indiana', '00'],
@@ -127,19 +161,40 @@
     const vDate = view.querySelector('.tv-date'), vName = view.querySelector('.tv-name'), vPlace = view.querySelector('.tv-place');
     list.innerHTML = STOPS.map((s, i) => `<li><button type="button" data-stop="${i}"><span>${s[0]}</span>${s[2]}</button></li>`).join('');
     const rows = [...list.querySelectorAll('button')];
-    let cur = 0;
-    const show = i => {
-      cur = (i + STOPS.length) % STOPS.length;
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const pulse = document.createElementNS(svgNS, 'circle');
+    pulse.setAttribute('class', 'pulse'); pulse.setAttribute('r', '10');
+    dots.forEach((d, i) => d.style.setProperty('--i', i));
+    let cur = -1, tT;
+    const show = (i, instant) => {
+      const next = (i + STOPS.length) % STOPS.length;
+      if (next === cur) return;
+      cur = next;
       const [, full, name, place, k] = STOPS[cur];
-      vDate.textContent = full + ', 2022';
-      vName.textContent = name;
-      vPlace.textContent = place;
-      vImg.classList.toggle('empty', !k);
-      if (k) { vPic.src = photo(k); vPic.alt = name + ', ' + place + ', ' + full + ', 2022'; }
       dots.forEach(d => d.classList.toggle('on', +d.dataset.stop === cur));
       rows.forEach(r => r.setAttribute('aria-current', +r.dataset.stop === cur));
-      const on = dots[cur]; if (on) on.parentNode.appendChild(on);
+      const on = dots[cur];
+      if (on) {
+        on.parentNode.appendChild(on);
+        pulse.setAttribute('cx', on.getAttribute('cx')); pulse.setAttribute('cy', on.getAttribute('cy'));
+        on.parentNode.insertBefore(pulse, on);
+      }
+      const apply = () => {
+        vDate.textContent = full;
+        vName.textContent = name;
+        vPlace.textContent = place;
+        vImg.classList.toggle('empty', !k);
+        if (k) { vPic.src = photo(k); vPic.alt = name + ', ' + place; }
+        view.classList.remove('swap');
+      };
+      clearTimeout(tT);
+      if (reduce || instant) return apply();
+      view.classList.add('swap');
+      tT = setTimeout(apply, 220);
     };
+    // preload tour photos once the section is near
+    const pre = new IntersectionObserver(es => { if (es[0].isIntersecting) { STOPS.forEach(s => { if (s[4]) { const im = new Image(); im.src = photo(s[4]); } }); pre.disconnect(); } }, { rootMargin: '400px' });
+    pre.observe(view);
     rows.forEach(r => r.addEventListener('click', () => show(+r.dataset.stop)));
     dots.forEach(d => {
       d.addEventListener('click', () => show(+d.dataset.stop));
@@ -149,6 +204,6 @@
     });
     view.querySelector('.tv-prev').addEventListener('click', () => show(cur - 1));
     view.querySelector('.tv-next').addEventListener('click', () => show(cur + 1));
-    show(14);
+    show(14, true);
   }
 })();
