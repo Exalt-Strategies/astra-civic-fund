@@ -52,9 +52,9 @@
 
   /* ---------- where we work: map + tabs ---------- */
   const STATES = {
-    mi: { name: 'Michigan', img: 'photos/mi-capitol.jpg', pos: 'center 35%',
-      alt: 'A delegation of young Indian Americans on the steps of the Michigan State Capitol in Lansing',
-      cap: 'Michigan State Capitol, Lansing',
+    mi: { name: 'Michigan', img: 'photos/msu-group.jpg', pos: 'center',
+      alt: 'A large group of students posing together in a lecture hall at Michigan State University',
+      cap: 'Michigan State University, East Lansing, 2022',
       desc: 'Engineering corridors, university towns, suburban Detroit, and a rapidly growing political community looking for a home.' },
     il: { name: 'Illinois', img: 'photos/il-niu.jpg', pos: 'center',
       alt: 'A crowd of students in a ballroom at Northern Illinois University',
@@ -64,8 +64,8 @@
       alt: 'A speaker holding a microphone talks with students seated at round tables at Cleveland State University',
       cap: 'Cleveland State University, 2022',
       desc: "Motel families, university communities, small-business owners: the constituency national campaigns skip past. We won't." },
-    mn: { name: 'Minnesota', img: 'photos/tour/22.jpg', pos: 'center',
-      alt: 'A speaker on stage in front of a full auditorium at the University of Minnesota',
+    mn: { name: 'Minnesota', img: 'photos/img-5652.jpg', pos: 'center',
+      alt: 'A speaker addressing a full auditorium at the University of Minnesota',
       cap: 'University of Minnesota, Minneapolis, 2022',
       desc: 'Engineering and medical communities, growing university chapters, and an active Indian American civic culture ready to scale.' },
     nc: { name: 'North Carolina', img: 'photos/img-9811.jpg', pos: 'center 30%',
@@ -148,10 +148,10 @@
     ['Oct 1',  'October 1',    'Virginia Tech', 'Blacksburg, Virginia', null],
     ['Nov 19', 'November 19',  'Georgia Tech, Tamasha', 'Atlanta, Georgia', '19'],
     ['Nov 22', 'November 22',  'University of Texas at San Antonio', 'San Antonio, Texas', '20'],
-    ['Nov 27', 'November 27',  'Colorado State University', 'Fort Collins, Colorado', 'csu'],
+    ['Nov 27', 'November 27',  'Colorado State University', 'Fort Collins, Colorado', '21'],
     ['Dec 3',  'December 3',   'University of Minnesota', 'Minneapolis, Minnesota', '22']
   ];
-  const photo = k => k === 'csu' ? 'photos/img-5167.jpg' : 'photos/tour/' + k + '.jpg';
+  const photo = k => 'photos/tour/' + k + '.jpg';
 
   const view = document.querySelector('.tour-view');
   const list = document.querySelector('.stop-list');

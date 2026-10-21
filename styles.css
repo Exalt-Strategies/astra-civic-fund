@@ -210,7 +210,7 @@ nav.links a:not(.btn):hover::after,nav.links a[aria-current="true"]::after{trans
 .state-tab:hover{border-color:var(--sea)}
 .state-tab[aria-selected="true"]{background:var(--paper);border-color:var(--paper);color:var(--night)}
 .state-card{border:1px solid var(--sea-line);background:var(--night-2)}
-.state-card figure{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--night-3)}
+.state-card figure{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--night-3)}
 .state-card figure img{width:100%;height:100%;object-fit:cover}
 .state-card .body{padding:1.2rem 1.4rem 1.4rem;transition:opacity .25s}
 .state-card figure img{transition:opacity .25s}
@@ -362,6 +362,7 @@ footer{background:var(--charcoal);color:#B3BCBD;font-size:.87rem}
   .hero-copy{padding-right:var(--pad)}
   .hero-media{grid-template-columns:minmax(0,1fr)}
   .hero-media .photo{min-height:24rem}
+  .hero-media .photo img{object-position:center 72%}
   .pillar-rail{flex-direction:row;gap:1.4rem;padding:1.4rem var(--pad)}
   .pillar-rail p{flex:1}
   .work-grid{grid-template-columns:repeat(2,1fr)}
