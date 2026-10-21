@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Receipt Preview</title>
+<style>
+  body { margin: 0; background: #d9d2c2; font: 14px/1.4 Helvetica, Arial, sans-serif; color: #1d1f3d; }
+  .bar { display: flex; gap: 10px; align-items: center; justify-content: center; padding: 14px; background: #1d1f3d; color: #efe9dc; flex-wrap: wrap; }
+  .bar button { border: 1px solid #efe9dc55; background: none; color: inherit; padding: 7px 14px; border-radius: 999px; cursor: pointer; font: inherit; }
+  .bar button[aria-pressed="true"] { background: #4feac4; color: #0b0b52; border-color: #4feac4; }
+  .inbox { max-width: 720px; margin: 20px auto 0; background: #fff; border-radius: 10px 10px 0 0; padding: 16px 20px; font-size: 14px; }
+  .inbox b { font-weight: 600; }
+  .inbox .s { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .inbox .m { color: #666; }
+  iframe { display: block; width: 100%; max-width: 720px; margin: 0 auto 40px; height: 1300px; border: 0; background: #efe9dc; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <span>Receipt email preview:</span>
+  <button data-v="once" aria-pressed="true">One-time gift</button>
+  <button data-v="monthly" aria-pressed="false">Monthly gift</button>
+</div>
+<div class="inbox">
+  <div class="s" id="subj"></div>
+  <div class="m"><b>Centre for Youth Policy</b> &lt;giving@centreforyouthpolicy.org&gt; · to jane@example.org</div>
+</div>
+<iframe id="f" title="Receipt email"></iframe>
+<script>
+const SAMPLES = {
+  once: {
+    subject: 'Your receipt from the Centre for Youth Policy',
+    preheader: 'Thank you for your gift of $103.20. Your official tax receipt is inside.',
+    first_name: 'Jane', donor_name: 'Jane Doe',
+    intro: 'We received your gift of $103.20 on 9 October 2026. This email is your official receipt.',
+    receipt_no: 'CYP-2026-001042', date: '9 October 2026', gift_type: 'One-time',
+    designation: "Where it's needed most", dedication: 'Priya Doe',
+    method: 'Visa ending 4242', amount: '$103.20', fee: '$3.20',
+    monthly: false,
+  },
+  monthly: {
+    subject: 'Your October 2026 receipt from the Centre for Youth Policy',
+    preheader: 'Thank you for your monthly gift of $25.86. Your official tax receipt is inside.',
+    first_name: 'Jane', donor_name: 'Jane Doe',
+    intro: 'We received your monthly gift of $25.86 on 9 October 2026. This email is your official receipt.',
+    receipt_no: 'CYP-2026-001043', date: '9 October 2026', gift_type: 'Monthly',
+    designation: 'Common Table', dedication: '',
+    method: 'Bank account ending 6789', amount: '$25.86', fee: '$0.86',
+    next_date: '9 November 2026', manage_url: '#',
+    monthly: true,
+  },
+};
+let tpl = '';
+function render(k) {
+  const d = Object.assign({ logo_url: '../assets/logo-white.svg' }, SAMPLES[k]);
+  let h = tpl.replace(/<!--IF (\w+)-->([\s\S]*?)<!--END \1-->/g, (_, key, body) => d[key] ? body : '');
+  h = h.replace(/\{\{(\w+)\}\}/g, (_, key) => d[key] ?? '');
+  document.getElementById('f').srcdoc = h;
+  document.getElementById('subj').textContent = d.subject;
+  document.querySelectorAll('.bar button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === k)));
+}
+document.querySelectorAll('.bar button').forEach(b => b.onclick = () => render(b.dataset.v));
+fetch('receipt.html').then(r => r.text()).then(t => { tpl = t; render('once'); });
+</script>
+</body>
+</html>

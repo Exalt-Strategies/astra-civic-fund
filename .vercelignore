@@ -1,3 +1,7 @@
 _tools
 serve.js
 stories/sample-*
+test/
+scripts/
+.env*
+emails/preview.html

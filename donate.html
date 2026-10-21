@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Donate · Astra Civic Fund</title>
+<meta name="description" content="Fund the organizers, chapters, campus networks, and institutions that turn Indian American numbers into political power. Contributions to Astra Civic Fund, a 501(c)(4), are not tax-deductible.">
+<meta name="theme-color" content="#405742">
+<link rel="canonical" href="https://astracivic.org/donate">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Astra Civic Fund">
+<meta property="og:title" content="Donate · Astra Civic Fund">
+<meta property="og:description" content="Fund the machinery: organizers, chapters, campus networks, and the institutions our community needs.">
+<meta property="og:url" content="https://astracivic.org/donate">
+<meta property="og:image" content="https://astracivic.org/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=sentient@400,401,500,501,600&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/donate.css">
+</head>
+<body class="sub donate-page">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="/" aria-label="Astra Civic Fund, home">
+      <img class="logo" src="/brand/astra-wordmark.svg" width="880" height="270" alt="astra">
+      <small>Civic Fund · 501(c)(4)</small>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span></button>
+    <nav class="links" id="site-nav" aria-label="Primary">
+      <a href="/#mission">Mission</a>
+      <a href="/#work">Our Work</a>
+      <a href="/#states">Where We Work</a>
+      <a href="/build">Build With Us</a>
+      <a href="/stories">Stories</a>
+      <a class="btn btn-solid" href="/donate" aria-current="page">Donate</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="give" id="give" aria-labelledby="give-h">
+  <div class="give-in">
+    <div class="give-copy">
+      <p class="eyebrow">Donate</p>
+      <h1 id="give-h">Fund the <em>machinery</em>.</h1>
+      <p class="give-lede">The numbers are settled. What turns them into power is the work between elections: organizers, chapters, campus networks, and the institutions our community still has to build. Your contribution pays for that work.</p>
+      <ul class="builds">
+        <li><b>Organizers and chapters</b><span>Field organizers and chapters in Michigan, Illinois, Ohio, and the states that follow.</span></li>
+        <li><b>Campus networks</b><span>Student leaders who register voters and bring their peers into civic life early.</span></li>
+        <li><b>Build With Us</b><span>Pro bono help for new nonprofits, 501(c)(4)s, PACs, and first-time candidates.</span></li>
+        <li><b>Stories</b><span>In-depth interviews and reporting on the people and issues of our community.</span></li>
+      </ul>
+      <ul class="assure">
+        <li>Astra Civic Fund is a 501(c)(4) social welfare organization. Contributions are <b>not tax-deductible</b> as charitable contributions.</li>
+        <li>Your card details go straight to Stripe. We never see or store them.</li>
+        <li>Monthly gifts can be changed or canceled at any time.</li>
+      </ul>
+    </div>
+
+    <form class="panel" id="panel" novalidate>
+      <div class="panel-sec">
+        <div class="freq" role="radiogroup" aria-label="Frequency">
+          <button type="button" role="radio" aria-checked="true" data-freq="once">One-time</button>
+          <button type="button" role="radio" aria-checked="false" data-freq="monthly">Monthly</button>
+          <span class="freq-pill" aria-hidden="true"></span>
+        </div>
+
+        <fieldset class="amounts">
+          <legend class="lbl">Amount (USD)</legend>
+          <div class="chips" id="chips"></div>
+          <label class="custom">
+            <span class="cur">$</span>
+            <input id="customAmt" inputmode="decimal" placeholder="Other amount" aria-label="Other amount in US dollars">
+            <span class="per" id="perLbl"></span>
+          </label>
+          <p class="hint" id="amtHint"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend class="lbl">Direct my gift to</legend>
+          <div class="desig" id="desig">
+            <button type="button" aria-pressed="true" data-d="needed">Where it's needed most</button>
+            <button type="button" aria-pressed="false" data-d="organizers">Organizers and chapters</button>
+            <button type="button" aria-pressed="false" data-d="campus">Campus networks</button>
+            <button type="button" aria-pressed="false" data-d="capacity">Build With Us</button>
+            <button type="button" aria-pressed="false" data-d="stories">Stories</button>
+          </div>
+        </fieldset>
+
+        <details class="extras">
+          <summary>Give in honor or memory of someone</summary>
+          <div class="extras-in">
+            <label class="fld"><span>In honor or memory of</span><input id="dedication" maxlength="120" placeholder="Name (optional)"></label>
+          </div>
+        </details>
+
+        <label class="cover">
+          <input type="checkbox" id="cover" checked>
+          <span>Add <b id="coverAmt">$3.20</b> so processing fees don't come out of your gift.</span>
+        </label>
+      </div>
+
+      <div class="panel-sec">
+        <p class="lbl">Your details</p>
+        <div class="row2">
+          <label class="fld"><span>Full name</span><input id="donorName" autocomplete="name" maxlength="100" required placeholder="Priya Shah"></label>
+          <label class="fld"><span>Email, for your receipt</span><input id="donorEmail" type="email" autocomplete="email" required placeholder="priya@example.com"></label>
+        </div>
+
+        <p class="lbl">Payment</p>
+        <div id="payment-element" class="pe-live" aria-label="Payment details"></div>
+        <p class="pay-error" id="payError" role="alert" tabindex="-1"></p>
+
+        <button class="btn btn-solid btn-give" type="submit" id="giveBtn">Give $103.20</button>
+        <p class="summary" id="summary"></p>
+        <p class="secure">Payments are processed securely by Stripe. Contributions to Astra Civic Fund are not tax-deductible.</p>
+      </div>
+
+      <div class="thanks" id="thanks" hidden>
+        <img class="ty-mark" src="/brand/astra-mark-white.svg" alt="" width="64" height="94">
+        <h2 id="thanksHead" tabindex="-1">Thank you.</h2>
+        <p id="tyMsg"><span id="tyOk">Your gift of <b id="tyAmt">$100</b> to Astra Civic Fund went through. Your receipt is on its way to <b id="tyEmail">your inbox</b>.</span><span id="tyBank" hidden>Your bank payment of <b id="tyAmt2"></b> has started. Bank transfers take a few business days to clear, and we will email your receipt to <b id="tyEmail2"></b> as soon as it does.</span></p>
+        <p class="ty-ref">Receipt no. <span id="tyRef">AST-2026-001042</span></p>
+        <button type="button" class="btn btn-ghost-light" id="again">Back to the form</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ============ OTHER WAYS ============ -->
+<section class="section ways" aria-labelledby="ways-h">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <p class="eyebrow">Other ways to give</p>
+        <h2 id="ways-h">Larger gifts, checks, and stock.</h2>
+      </div>
+      <p class="lede">For gifts by check, wire, or stock, or for gifts above $50,000, write to us and we will arrange it directly.</p>
+    </div>
+    <div class="ways-grid reveal">
+      <article><h3>Check or wire</h3><p>Email <a href="mailto:info@astracivic.org?subject=Giving%20by%20check%20or%20wire">info@astracivic.org</a> and we will send instructions.</p></article>
+      <article><h3>Stock</h3><p>To give appreciated securities, <a href="mailto:info@astracivic.org?subject=Giving%20stock">write to us</a> and we will arrange the transfer.</p></article>
+      <article><h3>Sponsor something specific</h3><p>Fund a chapter launch or a campus event in your city. <a href="mailto:info@astracivic.org?subject=Sponsoring%20Astra">Start a conversation</a>.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section faq" id="faq" aria-labelledby="faq-h">
+  <div class="wrap faq-in">
+    <div class="reveal">
+      <p class="eyebrow">Questions</p>
+      <h2 id="faq-h">Before you give.</h2>
+    </div>
+    <div class="faq-list">
+      <details><summary>Is my contribution tax-deductible?</summary><p>No. Astra Civic Fund is a 501(c)(4) social welfare organization, so contributions are not tax-deductible as charitable contributions for federal income tax purposes. A 501(c)(4) can do more advocacy and lobbying than a charity, which is why we are organized this way.</p></details>
+      <details><summary>Is this a contribution to Astra PAC?</summary><p>No. This page accepts contributions to Astra Civic Fund only. Astra PAC is a separate federal political committee with its own rules, and it does not accept contributions through this page.</p></details>
+      <details><summary>When will I get a receipt?</summary><p>Straight away, by email, for every gift. Monthly donors receive a receipt each month.</p></details>
+      <details id="manage"><summary>How do I change or cancel a monthly gift?</summary>
+        <p>Use the "Manage my monthly gift" button in any monthly receipt. Or enter the email you gave with your gift and we will send you a new link.</p>
+        <form class="manage" id="manageForm" novalidate>
+          <input type="email" id="manageEmail" autocomplete="email" placeholder="you@example.com" aria-label="Email used for your gift" required>
+          <button class="btn btn-solid" type="submit">Send link</button>
+        </form>
+        <p class="manage-msg" id="manageMsg" role="status"></p>
+      </details>
+      <details><summary>Is my payment secure?</summary><p>Card and bank details are entered directly into Stripe's secure fields and never touch our servers. Stripe is certified to the highest level of the payment card industry standard (PCI DSS Level 1).</p></details>
+      <details><summary>Can I direct my gift to one area of work?</summary><p>Yes. Choose an area on the form and we will use your gift for it. Gifts for "where it's needed most" give us the most flexibility, which is why we ask for them first.</p></details>
+      <details><summary>Something else?</summary><p>Write to <a href="mailto:info@astracivic.org">info@astracivic.org</a> and a person will reply.</p></details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="entities">
+    <div>
+      <b>Astra Civic Fund</b>
+      <small>501(c)(4) social welfare organization</small>
+      <p>Conducts community organizing, civic education, voter registration, and policy advocacy. Contributions are not tax-deductible as charitable contributions.</p>
+    </div>
+    <div>
+      <b>Astra PAC</b>
+      <small>Federal political committee, a separate entity</small>
+      <p>A separately funded political action committee. It does not accept contributions through this page.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="legal">
+      <span>© 2026 Astra Civic Fund. All rights reserved.</span>
+      <span class="paid"><b>Paid for by Astra Civic Fund.</b> Not authorized by any candidate or candidate's committee.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script src="/app.js" defer></script>
+<script src="/donate-form.js"></script>
+<script src="/donate.js"></script>
+</body>
+</html>
