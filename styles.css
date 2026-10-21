@@ -738,3 +738,11 @@ footer{background:var(--ink-dark);color:#BDBBB0;font-size:.87rem}
 .ss-empty b{color:var(--paper);font-weight:500}
 .pin.s-tour{--c:var(--terracotta-2)}
 .story-show.is-tour .ss-map .pin:not(.on) .dot{opacity:.85}
+.story-h{font-size:clamp(1.5rem,2.4vw,1.9rem);margin:2.6rem 0 1rem}
+.story-body a{color:var(--forest);text-decoration-color:var(--terracotta);text-underline-offset:3px}
+.story-lead figcaption a,.story-inline figcaption a{color:inherit}
+.ss-legend .lg-tour{display:none}
+.story-show.is-mixed .ss-legend .lg-tour{display:inline-flex}
+.ss-legend i.s-tour,.story-show.is-mixed .pin.s-tour{--c:#8E8B80}
+.story-show.is-mixed .pin.s-tour.on{--c:var(--paper)}
+.ss-feature .ov .k.is-tour{background:var(--tan);color:var(--ink-dark)}

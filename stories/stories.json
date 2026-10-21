@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "slug": "sri-siva-vishnu-temple",
+    "series": "leaders",
+    "title": "The temple that volunteers built",
+    "dek": "Before it was one of the largest Hindu temples in the country, the Sri Siva Vishnu Temple was an idea among a few friends. It still runs on volunteers, organized into committees.",
+    "name": "Sri Siva Vishnu Temple",
+    "role": "Board of Trustees and volunteer committees",
+    "place": "Lanham, Maryland",
+    "lat": 38.9668,
+    "lon": -76.8636,
+    "date": "2026-10-21",
+    "image": "/photos/stories/ssvt-lead.jpg",
+    "imageAlt": "The white gopurams of the Sri Siva Vishnu Temple in Lanham, Maryland",
+    "quote": "The symbol of a community's joint aspirations and efforts.",
+    "featured": true
+  }
+]

@@ -314,7 +314,7 @@
       if (s.lat == null || s.lon == null) return null;
       const [x, y] = project(+s.lon, +s.lat);
       const a = document.createElementNS(NS, 'a');
-      if (opts.link !== false) a.setAttribute('href', '/stories/' + s.slug);
+      if (opts.link !== false && (s.href || s.slug)) a.setAttribute('href', s.href || '/stories/' + s.slug);
       a.setAttribute('class', 'pin s-' + s.series);
       a.dataset.i = i;
       a.style.setProperty('--d', (i * 90) + 'ms');
@@ -366,15 +366,15 @@
     loadStories().then(list => {
       // Until real interviews are published, the showcase shows where the team has already
       // been: the campus tour stops (same data as the "Where we've been" section).
+      // With fewer than six stories, the rest of the showcase is filled with tour stops.
+      const tourItems = TOUR.map(([name, place, lat, lon, k]) => ({ title: name, place, lat, lon, series: 'tour', image: '/photos/tour/' + k + '.jpg', imageAlt: name + ', ' + place, href: '/#outreach' }));
       const tour = !list.length;
-      if (tour) {
-        show.classList.add('is-tour');
-        empty.hidden = false;
-        list = TOUR.map(([name, place, lat, lon, k]) => ({ title: name, place, lat, lon, series: 'tour', image: '/photos/tour/' + k + '.jpg', imageAlt: name + ', ' + place, href: '/#outreach' }));
-      }
+      const mixed = list.length < 6;
+      if (tour) { show.classList.add('is-tour'); empty.hidden = false; }
+      else if (mixed) show.classList.add('is-mixed');
       const href = s => s.href || '/stories/' + s.slug;
-      const kicker = s => tour ? 'Campus tour' : (LABEL[s.series] || '') + (s.sample ? ' · Sample' : '');
-      const lead = tour ? list : list.slice(0, 6);
+      const kicker = s => s.series === 'tour' ? 'Campus tour' : (LABEL[s.series] || '') + (s.sample ? ' · Sample' : '');
+      const lead = mixed ? list.concat(tourItems) : list.slice(0, 6);
       reel.innerHTML = lead.slice(0, 6).map((s, i) => `<a class="ss-card" href="${esc(href(s))}" data-i="${i}"><span class="img"><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></span><span class="k">${kicker(s)}</span><b>${esc(s.title)}</b><span class="pl">${esc(s.place)}</span></a>`).join('');
       const cards = [...reel.children];
       let cur = -1, timer, pins = [], mapSvg = null;
@@ -384,7 +384,7 @@
         const s = lead[i];
         feat.classList.add('swap');
         setTimeout(() => {
-          feat.innerHTML = `<a href="${esc(href(s))}"><span class="img"><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}"></span><span class="ov"><span class="k">${tour ? 'Campus tour' : kicker(s) + (s.sample ? ' story' : '')}</span><b>${esc(s.title)}</b>${s.quote ? `<q>${esc(s.quote)}</q>` : ''}<span class="pl">${esc(s.place)} · ${tour ? 'See every stop' : 'Read the story'}</span></span></a>`;
+          feat.innerHTML = `<a href="${esc(href(s))}"><span class="img"><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}"></span><span class="ov"><span class="k${s.series === 'tour' ? ' is-tour' : ''}">${kicker(s) + (s.sample ? ' story' : '')}</span><b>${esc(s.title)}</b>${s.quote ? `<q>${esc(s.quote)}</q>` : ''}<span class="pl">${esc(s.place)} · ${s.series === 'tour' ? 'See every stop' : 'Read the story'}</span></span></a>`;
           feat.classList.remove('swap');
         }, reduce ? 0 : 260);
         cards.forEach((c, j) => c.classList.toggle('on', j === i));
@@ -395,7 +395,7 @@
       const loop = () => { clearInterval(timer); if (!reduce) timer = setInterval(() => set((cur + 1) % lead.length), 6500); };
       cards.forEach((c, i) => { c.addEventListener('mouseenter', () => { set(i); clearInterval(timer); }); c.addEventListener('focus', () => set(i)); });
       reel.addEventListener('mouseleave', loop);
-      drawMap(mapHost, lead, tour ? { fit: 520, aspect: 1.1, pin: 8, label: true, link: false } : { fit: 560, aspect: 1.1, pin: 9, label: true }).then(m => {
+      drawMap(mapHost, lead, mixed ? { fit: 520, aspect: 1.1, pin: 8, label: true } : { fit: 560, aspect: 1.1, pin: 9, label: true }).then(m => {
         pins = m.pins; mapSvg = m.svg;
         pins.forEach((p, i) => p && p.addEventListener('mouseenter', () => { set(i); clearInterval(timer); }));
         mapHost.addEventListener('mouseleave', loop);
@@ -425,7 +425,7 @@
     loadStories().then(list => {
       const pick = list.filter(s => s.title !== here).slice(0, 3);
       more.innerHTML = pick.map(s => `<a class="story-card" href="/stories/${esc(s.slug)}"><div class="img"><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div><p class="story-kicker">${LABEL[s.series] || ''}${s.sample ? ' · Sample' : ''}</p><h3>${esc(s.title)}</h3><p class="story-by">${esc(s.place)}</p></a>`).join('');
-      if (!pick.length) more.remove();
+      if (!pick.length) { const h = more.previousElementSibling; if (h && h.classList.contains('eyebrow')) h.remove(); more.remove(); }
     });
   }
 
