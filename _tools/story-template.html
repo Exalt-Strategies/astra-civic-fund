@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--
+  ASTRA STORY TEMPLATE
+  To publish an interview:
+  1. Copy this file to /stories/<slug>.html (for example stories/priya-shah-ann-arbor.html).
+  2. Replace every [BRACKETED] value. Delete any block you do not need.
+  3. Put the photos in /photos/stories/ and point the <img> tags at them.
+  4. Add an entry to /stories/stories.json:
+     {"slug":"priya-shah-ann-arbor","series":"members","title":"...","dek":"...",
+      "name":"...","role":"...","place":"Ann Arbor, Michigan","date":"2026-11-02",
+      "image":"/photos/stories/priya-shah.jpg","imageAlt":"...","featured":true}
+     series is one of: leaders, members, issues. The newest "featured" story leads the Stories page.
+  This folder (_tools) is never deployed.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[TITLE] · Astra Stories</title>
+<meta name="description" content="[DEK, one sentence]">
+<meta name="theme-color" content="#405742">
+<link rel="canonical" href="https://astracivic.org/stories/[SLUG]">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Astra Civic Fund">
+<meta property="og:title" content="[TITLE]">
+<meta property="og:description" content="[DEK]">
+<meta property="og:image" content="https://astracivic.org/photos/stories/[IMAGE].jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=sentient@400,401,500,501,600&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body class="sub">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="/" aria-label="Astra Civic Fund, home">
+      <img class="logo" src="/brand/astra-wordmark.svg" width="880" height="270" alt="astra">
+      <small>Civic Fund · 501(c)(4)</small>
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span></button>
+    <nav class="links" id="site-nav" aria-label="Primary">
+      <a href="/#mission">Mission</a>
+      <a href="/#work">Our Work</a>
+      <a href="/#states">Where We Work</a>
+      <a href="/build">Build With Us</a>
+      <a href="/stories" aria-current="page">Stories</a>
+      <a class="btn btn-solid" href="/#act">Take Action</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<article class="story">
+  <header class="story-head wrap">
+    <p class="eyebrow"><a href="/stories">Stories</a> · [Leaders | Members | Issues]</p>
+    <h1>[TITLE]</h1>
+    <p class="story-dek">[DEK: one or two sentences on who this is and why it matters.]</p>
+    <p class="story-meta"><span>[Interview by NAME]</span><span>[Photographs by NAME]</span><time datetime="[YYYY-MM-DD]">[Month D, YYYY]</time></p>
+  </header>
+
+  <figure class="story-lead">
+    <img src="/photos/stories/[IMAGE].jpg" alt="[Describe the photo]">
+    <figcaption>[Caption: who, where, when.]</figcaption>
+  </figure>
+
+  <div class="story-body wrap">
+    <aside class="story-subject">
+      <b>[NAME]</b>
+      <span>[Role, organization]</span>
+      <span>[City, State]</span>
+    </aside>
+
+    <p class="intro">[Opening: two or three paragraphs of scene and context, written by the interviewer.]</p>
+    <p>[Context paragraph.]</p>
+
+    <div class="qa">
+      <p class="q">[Question?]</p>
+      <p class="a">[Answer.]</p>
+      <p class="q">[Question?]</p>
+      <p class="a">[Answer.]</p>
+    </div>
+
+    <blockquote class="pull">
+      <p>[A line from the interview worth pulling out.]</p>
+      <cite>[NAME]</cite>
+    </blockquote>
+
+    <div class="qa">
+      <p class="q">[Question?]</p>
+      <p class="a">[Answer.]</p>
+    </div>
+
+    <figure class="story-inline">
+      <img src="/photos/stories/[IMAGE-2].jpg" alt="[Describe the photo]">
+      <figcaption>[Caption.]</figcaption>
+    </figure>
+
+    <div class="qa">
+      <p class="q">[Question?]</p>
+      <p class="a">[Answer.]</p>
+    </div>
+
+    <p class="story-note">This interview has been edited for length and clarity.</p>
+  </div>
+
+  <aside class="story-next wrap">
+    <p>Know someone whose story should be told? <a href="/stories#nominate">Nominate them</a>.</p>
+  </aside>
+</article>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="legal">
+      <span>© 2026 Astra Civic Fund. All rights reserved.</span>
+      <span class="paid"><b>Paid for by Astra Civic Fund.</b> Not authorized by any candidate or candidate's committee.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/app.js" defer></script>
+</body>
+</html>

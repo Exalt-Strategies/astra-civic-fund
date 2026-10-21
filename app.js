@@ -207,3 +207,95 @@
     show(14, true);
   }
 })();
+
+/* ---------- build with us + stories ---------- */
+(() => {
+  const INBOX = 'info@astracivic.org';
+  const STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+  document.querySelectorAll('select[name="State"]').forEach(sel => {
+    STATES.forEach(s => sel.insertAdjacentHTML('beforeend', `<option>${s}</option>`));
+  });
+
+  /* who-is-filling-this-out tabs */
+  const tabs = [...document.querySelectorAll('.form-tabs [role="tab"]')];
+  const pick = t => tabs.forEach(b => {
+    const on = b === t;
+    b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1;
+    document.getElementById(b.getAttribute('aria-controls')).hidden = !on;
+  });
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => pick(t));
+    t.addEventListener('keydown', e => {
+      const k = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (!k) return;
+      const n = tabs[(i + k + tabs.length) % tabs.length]; pick(n); n.focus();
+    });
+  });
+  if (location.hash === '#network' && tabs[1]) pick(tabs[1]);
+  document.querySelectorAll('a[href$="#network"]').forEach(a => a.addEventListener('click', () => tabs[1] && pick(tabs[1])));
+
+  /* forms: validate, then hand off to the visitor's email app */
+  document.querySelectorAll('form.astra-form').forEach(form => {
+    const status = form.querySelector('.form-status');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+      let firstBad = null;
+      const flag = el => { el.classList.add('invalid'); firstBad = firstBad || el; };
+      form.querySelectorAll('input[required]:not([type=checkbox]), select[required], textarea[required]').forEach(el => {
+        if (!el.value.trim() || (el.type === 'email' && !/^\S+@\S+\.\S+$/.test(el.value))) flag(el);
+      });
+      form.querySelectorAll('.choices[data-required]').forEach(g => { if (!g.querySelector('input:checked')) flag(g); });
+      form.querySelectorAll('input[type=checkbox][required]').forEach(c => { if (!c.checked) flag(c.closest('label')); });
+      if (firstBad) {
+        status.className = 'form-status err';
+        status.textContent = 'Please fill in the highlighted fields.';
+        (firstBad.querySelector ? firstBad.querySelector('input') || firstBad : firstBad).focus();
+        return;
+      }
+      const data = new FormData(form), lines = [], seen = {};
+      for (const [k, v] of data.entries()) {
+        if (!String(v).trim()) continue;
+        if (seen[k]) { seen[k].push(v); continue; }
+        seen[k] = [v];
+      }
+      for (const k in seen) lines.push(k + ': ' + seen[k].join(', '));
+      const subject = form.dataset.subject + (seen.Name ? ' from ' + seen.Name[0] : '');
+      location.href = 'mailto:' + INBOX + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n\n') + '\n');
+      status.className = 'form-status ok';
+      status.textContent = 'Your email app should open with everything filled in. Press send there to finish. If nothing opens, email ' + INBOX + '.';
+    });
+    form.addEventListener('input', e => {
+      const el = e.target.closest('.invalid') || (e.target.classList.contains('invalid') ? e.target : null);
+      if (el) el.classList.remove('invalid');
+    });
+  });
+
+  /* stories feed, driven by /stories/stories.json */
+  const feed = document.querySelector('.story-feed');
+  if (!feed) return;
+  const feature = feed.querySelector('.story-feature'), grid = feed.querySelector('.story-grid'), empty = feed.querySelector('.story-empty');
+  const cards = [...document.querySelectorAll('.series-card')];
+  const LABEL = { leaders: 'Leaders', members: 'Members', issues: 'Issues' };
+  const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  let stories = [];
+  const render = series => {
+    cards.forEach(c => c.setAttribute('aria-pressed', c.dataset.series === series));
+    const list = stories.filter(s => series === 'all' || s.series === series);
+    feature.innerHTML = ''; grid.innerHTML = '';
+    empty.hidden = list.length > 0;
+    if (!list.length) return;
+    const lead = list.find(s => s.featured) || list[0];
+    feature.innerHTML = `<a href="/stories/${esc(lead.slug)}"><div class="img"><img src="${esc(lead.image)}" alt="${esc(lead.imageAlt)}"></div><div><p class="story-kicker">${LABEL[lead.series] || ''}</p><h2>${esc(lead.title)}</h2><p class="dek">${esc(lead.dek)}</p><p class="story-by">${esc(lead.name)}${lead.place ? ' · ' + esc(lead.place) : ''} · ${fmt(lead.date)}</p></div></a>`;
+    grid.innerHTML = list.filter(s => s !== lead).map(s => `<a class="story-card" href="/stories/${esc(s.slug)}"><div class="img"><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div><p class="story-kicker">${LABEL[s.series] || ''}</p><h3>${esc(s.title)}</h3><p>${esc(s.dek)}</p></a>`).join('');
+  };
+  cards.forEach(c => c.addEventListener('click', () => {
+    render(c.dataset.series);
+    history.replaceState(null, '', c.dataset.series === 'all' ? location.pathname : '#' + c.dataset.series);
+  }));
+  const start = LABEL[location.hash.slice(1)] ? location.hash.slice(1) : 'all';
+  fetch('/stories/stories.json').then(r => r.ok ? r.json() : []).catch(() => []).then(list => {
+    stories = (Array.isArray(list) ? list : []).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    render(start);
+  });
+})();
