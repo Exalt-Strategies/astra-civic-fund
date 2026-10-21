@@ -8,7 +8,8 @@
   4. Add an entry to /stories/stories.json:
      {"slug":"priya-shah-ann-arbor","series":"members","title":"...","dek":"...",
       "name":"...","role":"...","place":"Ann Arbor, Michigan","date":"2026-11-02",
-      "image":"/photos/stories/priya-shah.jpg","imageAlt":"...","featured":true}
+      "lat":42.28,"lon":-83.74,"image":"/photos/stories/priya-shah.jpg","imageAlt":"...",
+      "quote":"One line from the interview","featured":true}
      series is one of: leaders, members, issues. The newest "featured" story leads the Stories page.
   This folder (_tools) is never deployed.
 -->
@@ -55,11 +56,18 @@
 
 <main id="main">
 <article class="story">
-  <header class="story-head wrap">
+  <header class="story-head-wrap">
+  <div class="story-head wrap">
     <p class="eyebrow"><a href="/stories">Stories</a> · [Leaders | Members | Issues]</p>
     <h1>[TITLE]</h1>
     <p class="story-dek">[DEK: one or two sentences on who this is and why it matters.]</p>
     <p class="story-meta"><span>[Interview by NAME]</span><span>[Photographs by NAME]</span><time datetime="[YYYY-MM-DD]">[Month D, YYYY]</time></p>
+  </div>
+  <!-- Locator map: set the story's latitude, longitude and state name -->
+  <figure class="story-locator" data-lat="[LAT]" data-lon="[LON]" data-state="[State name]">
+    <div class="loc-map"></div>
+    <figcaption>[City, State]</figcaption>
+  </figure>
   </header>
 
   <figure class="story-lead">
@@ -107,9 +115,13 @@
     <p class="story-note">This interview has been edited for length and clarity.</p>
   </div>
 
-  <aside class="story-next wrap">
-    <p>Know someone whose story should be told? <a href="/stories#nominate">Nominate them</a>.</p>
-  </aside>
+  <section class="story-more">
+    <div class="wrap">
+      <p class="eyebrow">More stories</p>
+      <div class="more-grid"></div>
+      <p class="story-next">Know someone whose story should be told? <a href="/stories#nominate">Nominate them</a>.</p>
+    </div>
+  </section>
 </article>
 </main>
 

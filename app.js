@@ -270,32 +270,212 @@
     });
   });
 
-  /* stories feed, driven by /stories/stories.json */
+})();
+
+/* ---------- stories: data, map, homepage showcase, stories page ---------- */
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const LABEL = { leaders: 'Leaders', members: 'Members', issues: 'Issues' };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  // Published stories live in /stories/stories.json. Sample stories exist only for local
+  // layout previews and are never deployed (see .vercelignore).
+  const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  const getJSON = u => fetch(u).then(r => r.ok ? r.json() : []).catch(() => []);
+  const loadStories = () => getJSON('/stories/stories.json').then(list => {
+    list = Array.isArray(list) ? list : [];
+    if (list.length || !local) return list;
+    return getJSON('/stories/sample-stories.json').then(x => (Array.isArray(x) ? x : []).map(s => ({ ...s, sample: true })));
+  }).then(list => list.sort((a, b) => (b.date || '').localeCompare(a.date || '')));
+
+  // Albers equal-area, lower 48, fitted to the 960x600 base map in /assets/us-lower48.svg
+  const K = 1270.2054, TX = 479.7363, TY = 295.3365, CX = -0.008094, CY = 0.646162;
+  const RAD = Math.PI / 180, S0 = Math.sin(29.5 * RAD), N = (S0 + Math.sin(45.5 * RAD)) / 2, C = 1 + S0 * (2 * N - S0), R0 = Math.sqrt(C) / N;
+  const project = (lon, lat) => {
+    const l = (lon + 96) * RAD * N, r = Math.sqrt(C - 2 * N * Math.sin(lat * RAD)) / N;
+    return [TX + K * (r * Math.sin(l) - CX), TY - K * (R0 - r * Math.cos(l) - CY)];
+  };
+  let baseSVG;
+  const baseMap = () => baseSVG || (baseSVG = fetch('/assets/us-lower48.svg').then(r => r.text()));
+  const NS = 'http://www.w3.org/2000/svg';
+  const PRIORITY = ['Michigan', 'Illinois', 'Ohio', 'Minnesota', 'North Carolina', 'Pennsylvania'];
+
+  // Draws the map into `host` and returns {svg, pins}. Pins carry data-i = index into `list`.
+  const drawMap = (host, list, opts = {}) => baseMap().then(txt => {
+    host.innerHTML = txt;
+    const svg = host.querySelector('svg');
+    svg.setAttribute('class', 'smap');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Map of story locations');
+    svg.querySelectorAll('path').forEach(p => { if (PRIORITY.includes(p.dataset.state)) p.classList.add('pri'); if (opts.highlight === p.dataset.state) p.classList.add('hl'); });
+    const g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'pins'); svg.appendChild(g);
+    const pins = list.map((s, i) => {
+      if (s.lat == null || s.lon == null) return null;
+      const [x, y] = project(+s.lon, +s.lat);
+      const a = document.createElementNS(NS, 'a');
+      if (opts.link !== false) a.setAttribute('href', '/stories/' + s.slug);
+      a.setAttribute('class', 'pin s-' + s.series);
+      a.dataset.i = i;
+      a.style.setProperty('--d', (i * 90) + 'ms');
+      const pr = opts.pin || 6.5;
+      a.innerHTML = `<circle class="halo" cx="${x}" cy="${y}" r="${pr + 2}"/><circle class="dot" cx="${x}" cy="${y}" r="${pr}"/><title>${esc(s.title)} · ${esc(s.place)}</title>`;
+      a.dataset.x = x; a.dataset.y = y;
+      g.appendChild(a);
+      return a;
+    });
+    if (opts.fit) {
+      const pts = pins.filter(Boolean).map(p => [+p.dataset.x, +p.dataset.y]);
+      if (pts.length) {
+        const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+        let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+        const w = Math.max(x1 - x0 + 160, opts.fit), h = w / (opts.aspect || 1.25);
+        const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+        svg.setAttribute('viewBox', [cx - w / 2, cy - h / 2, w, h].map(v => v.toFixed(1)).join(' '));
+      }
+    }
+    if (opts.label) {
+      const t = document.createElementNS(NS, 'text'); t.setAttribute('class', 'pin-label'); svg.appendChild(t);
+      svg.pinLabel = (i) => { const p = pins[i]; if (!p) { t.textContent = ''; return; } t.textContent = list[i].place.split(',')[0]; t.setAttribute('x', +p.dataset.x + (opts.pin || 6.5) + 7); t.setAttribute('y', +p.dataset.y + 4); };
+    }
+    return { svg, pins };
+  });
+
+  /* ----- homepage showcase ----- */
+  // [name, place, lat, lon, photo] for tour stops that have a photo
+  const TOUR = [
+    ['University of Michigan', 'Ann Arbor, Michigan', 42.278, -83.738, '14'],
+    ['Michigan State University', 'East Lansing, Michigan', 42.701, -84.482, '15'],
+    ['Cleveland State University', 'Cleveland, Ohio', 41.502, -81.675, '06'],
+    ['University of Minnesota', 'Minneapolis, Minnesota', 44.974, -93.228, '22'],
+    ['Northern Illinois University', 'DeKalb, Illinois', 41.934, -88.775, '10'],
+    ['University of Dayton', 'Dayton, Ohio', 39.740, -84.179, '05'],
+    ['DePaul University', 'Chicago, Illinois', 41.925, -87.655, '09'],
+    ['IUPUI', 'Indianapolis, Indiana', 39.774, -86.176, '00'],
+    ['Vanderbilt University', 'Nashville, Tennessee', 36.144, -86.803, '13'],
+    ['Georgia Tech', 'Atlanta, Georgia', 33.776, -84.396, '19'],
+    ['Clemson University', 'Clemson, South Carolina', 34.678, -82.837, '02'],
+    ['University of Kansas', 'Lawrence, Kansas', 38.954, -95.255, '11'],
+    ['University of Oklahoma', 'Norman, Oklahoma', 35.205, -97.445, '08'],
+    ['University of Texas at San Antonio', 'San Antonio, Texas', 29.583, -98.619, '20'],
+    ['Colorado State University', 'Fort Collins, Colorado', 40.575, -105.085, '21']
+  ];
+  const show = document.querySelector('.story-show');
+  if (show) {
+    const feat = show.querySelector('.ss-feature'), mapHost = show.querySelector('.ss-map'), reel = show.querySelector('.ss-reel'), empty = show.querySelector('.ss-empty');
+    loadStories().then(list => {
+      // Until real interviews are published, the showcase shows where the team has already
+      // been: the campus tour stops (same data as the "Where we've been" section).
+      const tour = !list.length;
+      if (tour) {
+        show.classList.add('is-tour');
+        empty.hidden = false;
+        list = TOUR.map(([name, place, lat, lon, k]) => ({ title: name, place, lat, lon, series: 'tour', image: '/photos/tour/' + k + '.jpg', imageAlt: name + ', ' + place, href: '/#outreach' }));
+      }
+      const href = s => s.href || '/stories/' + s.slug;
+      const kicker = s => tour ? 'Campus tour' : (LABEL[s.series] || '') + (s.sample ? ' · Sample' : '');
+      const lead = tour ? list : list.slice(0, 6);
+      reel.innerHTML = lead.slice(0, 6).map((s, i) => `<a class="ss-card" href="${esc(href(s))}" data-i="${i}"><span class="img"><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></span><span class="k">${kicker(s)}</span><b>${esc(s.title)}</b><span class="pl">${esc(s.place)}</span></a>`).join('');
+      const cards = [...reel.children];
+      let cur = -1, timer, pins = [], mapSvg = null;
+      const set = i => {
+        if (i === cur) return;
+        cur = i;
+        const s = lead[i];
+        feat.classList.add('swap');
+        setTimeout(() => {
+          feat.innerHTML = `<a href="${esc(href(s))}"><span class="img"><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}"></span><span class="ov"><span class="k">${tour ? 'Campus tour' : kicker(s) + (s.sample ? ' story' : '')}</span><b>${esc(s.title)}</b>${s.quote ? `<q>${esc(s.quote)}</q>` : ''}<span class="pl">${esc(s.place)} · ${tour ? 'See every stop' : 'Read the story'}</span></span></a>`;
+          feat.classList.remove('swap');
+        }, reduce ? 0 : 260);
+        cards.forEach((c, j) => c.classList.toggle('on', j === i));
+        pins.forEach((p, j) => p && p.classList.toggle('on', j === i));
+        const on = pins[i]; if (on) on.parentNode.appendChild(on);
+        if (mapSvg && mapSvg.pinLabel) mapSvg.pinLabel(i);
+      };
+      const loop = () => { clearInterval(timer); if (!reduce) timer = setInterval(() => set((cur + 1) % lead.length), 6500); };
+      cards.forEach((c, i) => { c.addEventListener('mouseenter', () => { set(i); clearInterval(timer); }); c.addEventListener('focus', () => set(i)); });
+      reel.addEventListener('mouseleave', loop);
+      drawMap(mapHost, lead, tour ? { fit: 520, aspect: 1.1, pin: 8, label: true, link: false } : { fit: 560, aspect: 1.1, pin: 9, label: true }).then(m => {
+        pins = m.pins; mapSvg = m.svg;
+        pins.forEach((p, i) => p && p.addEventListener('mouseenter', () => { set(i); clearInterval(timer); }));
+        mapHost.addEventListener('mouseleave', loop);
+        const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { mapHost.classList.add('in'); io.disconnect(); } }, { threshold: .25 });
+        io.observe(mapHost);
+        cur = -1; set(0);
+      });
+      set(0); loop();
+    });
+  }
+
+  /* ----- story article: locator map + more stories ----- */
+  const loc = document.querySelector('.story-locator');
+  if (loc) {
+    const host = loc.querySelector('.loc-map');
+    drawMap(host, [{ lat: +loc.dataset.lat, lon: +loc.dataset.lon, series: 'leaders', title: '', place: loc.querySelector('figcaption').textContent }], { link: false, highlight: loc.dataset.state })
+      .then(m => {
+        const svg = m.svg, st = svg.querySelector('path.hl');
+        if (st) { const b = st.getBBox(), pad = Math.max(b.width, b.height) * 1.1; svg.setAttribute('viewBox', [b.x + b.width / 2 - pad, b.y + b.height / 2 - pad * .75, pad * 2, pad * 1.5].join(' ')); }
+        m.pins[0] && m.pins[0].classList.add('on');
+        host.classList.add('in');
+      });
+  }
+  const more = document.querySelector('.more-grid');
+  if (more) {
+    const here = (document.querySelector('.story-head h1') || {}).textContent;
+    loadStories().then(list => {
+      const pick = list.filter(s => s.title !== here).slice(0, 3);
+      more.innerHTML = pick.map(s => `<a class="story-card" href="/stories/${esc(s.slug)}"><div class="img"><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div><p class="story-kicker">${LABEL[s.series] || ''}${s.sample ? ' · Sample' : ''}</p><h3>${esc(s.title)}</h3><p class="story-by">${esc(s.place)}</p></a>`).join('');
+      if (!pick.length) more.remove();
+    });
+  }
+
+  /* ----- stories page ----- */
   const feed = document.querySelector('.story-feed');
   if (!feed) return;
   const feature = feed.querySelector('.story-feature'), grid = feed.querySelector('.story-grid'), empty = feed.querySelector('.story-empty');
-  const cards = [...document.querySelectorAll('.series-card')];
-  const LABEL = { leaders: 'Leaders', members: 'Members', issues: 'Issues' };
-  const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  let stories = [];
+  const cardsF = [...document.querySelectorAll('.series-card')];
+  const mapHost = document.querySelector('.stories-map .map-host'), popup = document.querySelector('.stories-map .map-pop');
+  let stories = [], pins = [];
   const render = series => {
-    cards.forEach(c => c.setAttribute('aria-pressed', c.dataset.series === series));
+    cardsF.forEach(c => c.setAttribute('aria-pressed', c.dataset.series === series));
+    pins.forEach((p, i) => p && p.classList.toggle('dim', series !== 'all' && stories[i].series !== series));
     const list = stories.filter(s => series === 'all' || s.series === series);
     feature.innerHTML = ''; grid.innerHTML = '';
     empty.hidden = list.length > 0;
     if (!list.length) return;
     const lead = list.find(s => s.featured) || list[0];
-    feature.innerHTML = `<a href="/stories/${esc(lead.slug)}"><div class="img"><img src="${esc(lead.image)}" alt="${esc(lead.imageAlt)}"></div><div><p class="story-kicker">${LABEL[lead.series] || ''}</p><h2>${esc(lead.title)}</h2><p class="dek">${esc(lead.dek)}</p><p class="story-by">${esc(lead.name)}${lead.place ? ' · ' + esc(lead.place) : ''} · ${fmt(lead.date)}</p></div></a>`;
-    grid.innerHTML = list.filter(s => s !== lead).map(s => `<a class="story-card" href="/stories/${esc(s.slug)}"><div class="img"><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div><p class="story-kicker">${LABEL[s.series] || ''}</p><h3>${esc(s.title)}</h3><p>${esc(s.dek)}</p></a>`).join('');
+    const tag = s => (LABEL[s.series] || '') + (s.sample ? ' · Sample' : '');
+    feature.innerHTML = `<a href="/stories/${esc(lead.slug)}"><div class="img"><img src="${esc(lead.image)}" alt="${esc(lead.imageAlt)}"></div><div><p class="story-kicker">${tag(lead)}</p><h2>${esc(lead.title)}</h2><p class="dek">${esc(lead.dek)}</p>${lead.quote ? `<p class="story-q">“${esc(lead.quote)}”</p>` : ''}<p class="story-by">${esc(lead.place)} · ${fmt(lead.date)}</p></div></a>`;
+    grid.innerHTML = list.filter(s => s !== lead).map(s => `<a class="story-card" href="/stories/${esc(s.slug)}"><div class="img"><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div><p class="story-kicker">${tag(s)}</p><h3>${esc(s.title)}</h3><p>${esc(s.dek)}</p><p class="story-by">${esc(s.place)}</p></a>`).join('');
   };
-  cards.forEach(c => c.addEventListener('click', () => {
+  cardsF.forEach(c => c.addEventListener('click', () => {
     render(c.dataset.series);
     history.replaceState(null, '', c.dataset.series === 'all' ? location.pathname : '#' + c.dataset.series);
   }));
   const start = LABEL[location.hash.slice(1)] ? location.hash.slice(1) : 'all';
-  fetch('/stories/stories.json').then(r => r.ok ? r.json() : []).catch(() => []).then(list => {
-    stories = (Array.isArray(list) ? list : []).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  loadStories().then(list => {
+    stories = list;
+    document.querySelector('.stories-map') && document.querySelector('.stories-map').classList.toggle('is-empty', !list.length);
     render(start);
+    if (!mapHost) return;
+    drawMap(mapHost, stories).then(m => {
+      pins = m.pins;
+      render(start);
+      const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { mapHost.classList.add('in'); io.disconnect(); } }, { threshold: .2 });
+      io.observe(mapHost);
+      pins.forEach((p, i) => {
+        if (!p) return;
+        const s = stories[i];
+        p.addEventListener('mouseenter', () => {
+          const box = mapHost.getBoundingClientRect(), dot = p.querySelector('.dot').getBoundingClientRect();
+          popup.innerHTML = `<img src="${esc(s.image)}" alt=""><span class="k">${LABEL[s.series] || ''}${s.sample ? ' · Sample' : ''}</span><b>${esc(s.title)}</b><span class="pl">${esc(s.place)}</span>`;
+          popup.style.left = (dot.left - box.left + dot.width / 2) + 'px';
+          popup.style.top = (dot.top - box.top) + 'px';
+          popup.classList.toggle('flip', dot.left - box.left > box.width * .62);
+          popup.hidden = false;
+        });
+        p.addEventListener('mouseleave', () => { popup.hidden = true; });
+      });
+    });
   });
 })();
