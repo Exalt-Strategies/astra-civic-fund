@@ -5,26 +5,44 @@ const { sign } = require('./_lib/token');
 const { getStripe } = require('./_lib/stripe');
 const { isValidEmail } = require('./_lib/gift');
 const { fromPaymentIntent, fromInvoice } = require('./_lib/stripe-data');
+const { alertRecipient, renderGiftAlert } = require('./_lib/staff');
 
 const RECEIPT_LINK_TTL = 7 * 24 * 3600;
 
 function make({ stripe, sendEmail, env }) {
   const logoUrl = () => emailLogoUrl(env);
 
+  // Staff "new gift" email. Optional: only when ALERT_EMAIL is an @astracivic.org address.
+  // A failure throws so Stripe retries; alert_sent keeps it to one email per payment, and receipt_sent
+  // keeps the donor's receipt from being sent again on that retry.
+  async function alertOnce(update, metadata, data, kind, key) {
+    if (metadata.alert_sent === '1') return;
+    const to = alertRecipient(env);
+    if (!to) { if (env.ALERT_EMAIL) console.error('stripe-webhook: ALERT_EMAIL is not an @astracivic.org address'); return; }
+    await sendEmail({ to, ...renderGiftAlert(data, kind), idempotencyKey: `gift-alert-${key}` });
+    await update({ metadata: { alert_sent: '1' } });
+  }
+
   async function onPaymentIntent(s, id, event) {
     const pi = await s.paymentIntents.retrieve(id, { expand: ['payment_method'] });
     const m = pi.metadata || {};
-    if (m.kind !== 'once' || m.receipt_sent === '1') return;
+    if (m.kind !== 'once') return;
     const data = fromPaymentIntent(pi, { paidAt: new Date(event.created * 1000), logoUrl: logoUrl() });
-    if (!isValidEmail(data.email)) { console.error('stripe-webhook: no receipt email for', pi.id); return; }
-    // Resend idempotency keys last 24h while Stripe retries for up to 3 days; the receipt_sent marker is the long-term guard.
-    await sendEmail({ to: data.email.trim(), ...renderReceipt(data), idempotencyKey: `receipt-${pi.id}` });
-    await s.paymentIntents.update(pi.id, { metadata: { receipt_sent: '1' } });
+    if (m.receipt_sent !== '1') {
+      if (!isValidEmail(data.email)) console.error('stripe-webhook: no receipt email for', pi.id);
+      else {
+        // Resend idempotency keys last 24h while Stripe retries for up to 3 days; the receipt_sent marker is the long-term guard.
+        await sendEmail({ to: data.email.trim(), ...renderReceipt(data), idempotencyKey: `receipt-${pi.id}` });
+        await s.paymentIntents.update(pi.id, { metadata: { receipt_sent: '1' } });
+      }
+    }
+    await alertOnce(u => s.paymentIntents.update(pi.id, u), m, data, 'once', pi.id);
   }
 
   async function onInvoice(s, id, event) {
     const inv = await s.invoices.retrieve(id);
-    if (!inv.amount_paid || (inv.metadata && inv.metadata.receipt_sent === '1')) return;
+    const im = inv.metadata || {};
+    if (!inv.amount_paid || (im.receipt_sent === '1' && (im.alert_sent === '1' || !alertRecipient(env)))) return;
     const details = inv.parent && inv.parent.subscription_details;
     if (!details || !details.subscription) return;
     const subId = typeof details.subscription === 'string' ? details.subscription : details.subscription.id;
@@ -37,10 +55,16 @@ function make({ stripe, sendEmail, env }) {
     const token = sign({ c: customer, k: 'portal' }, env.MANAGE_SECRET, RECEIPT_LINK_TTL, () => event.created * 1000);
     const manageUrl = `${env.SITE_URL}/api/portal?t=${token}`;
     const data = fromInvoice(inv, sub, { paidAt: new Date(event.created * 1000), logoUrl: logoUrl(), manageUrl });
-    if (!isValidEmail(data.email)) { console.error('stripe-webhook: no receipt email for', inv.id); return; }
-    // Same 24h Resend key window applies; receipt_sent is the long-term guard.
-    await sendEmail({ to: data.email.trim(), ...renderReceipt(data), idempotencyKey: `receipt-${inv.id}` });
-    await s.invoices.update(inv.id, { metadata: { receipt_sent: '1' } });
+    if (im.receipt_sent !== '1') {
+      if (!isValidEmail(data.email)) console.error('stripe-webhook: no receipt email for', inv.id);
+      else {
+        // Same 24h Resend key window applies; receipt_sent is the long-term guard.
+        await sendEmail({ to: data.email.trim(), ...renderReceipt(data), idempotencyKey: `receipt-${inv.id}` });
+        await s.invoices.update(inv.id, { metadata: { receipt_sent: '1' } });
+      }
+    }
+    const alertKind = inv.billing_reason === 'subscription_create' ? 'monthly-new' : 'monthly-renewal';
+    await alertOnce(u => s.invoices.update(inv.id, u), im, data, alertKind, inv.id);
   }
 
   return async function stripeWebhook(req, res) {
